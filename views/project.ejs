@@ -1,0 +1,51 @@
+<!-- views/project.ejs -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" en="lang">
+<head>
+	<title></title>
+	<script>
+
+          var isMobile = {
+              Android: function() {
+                  return navigator.userAgent.match(/Android/i);
+              },
+              BlackBerry: function() {
+                  return navigator.userAgent.match(/BlackBerry/i);
+              },
+              iOS: function() {
+                  return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+              },
+              Opera: function() {
+                  return navigator.userAgent.match(/Opera Mini/i);
+              },
+              Windows: function() {
+                  return navigator.userAgent.match(/IEMobile/i);
+              },
+              any: function() {
+                  return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+              }
+
+          };
+          console.log("oooo");
+          var is_weixn = function(){
+
+          var ua = navigator.userAgent.toLowerCase();
+
+            if(ua.match(/MicroMessenger/i)=="micromessenger") {
+            document.location.href="http://www.google.com";
+            return true;
+            }else{
+            document.location.href = "<%= project.default_link %>" ;
+            }
+          }
+          is_weixn();
+    </script>
+</head>
+<body>
+	<h1>产品</h1>
+	<p>
+			<strong>id</strong>:<div id = "id"> <%= project._id %></div><br>
+			<strong>wechat</strong>: <div id = "wechat_link"><%= project.wechat_link %></div><br>						
+	</p>
+</body>
+</html>

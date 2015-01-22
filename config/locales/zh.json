@@ -1,0 +1,16 @@
+{
+  "Welcome": "欢迎",
+  "A brand new app.": "一个全新的应用",
+
+  "Error.Passport.Password.Invalid": "密码无效！",
+  "Error.Passport.Password.Wrong": "密码不正确！",
+  "Error.Passport.Password.NotSet": "哦不，你还没有设置密码！",
+  "Error.Passport.Username.NotFound": "嗯，你的名字叫啥来着？",
+  "Error.Passport.User.Exists": "这个用户名已经被占用了。",
+  "Error.Passport.Email.NotFound": "那个Email似乎不对。",
+  "Error.Passport.Email.Missing": "你需要提供一个Email来验证。",
+  "Error.Passport.Email.Exists": "这个Email已经存在，尝试登录一下。",
+  "Error.Passport.Username.Missing": "你需要提供一个用户名。",
+  "Error.Passport.Password.Missing": "哦，不。你还没有设置过一个口令",
+  "Error.Passport.Generic": "等等，反正登陆的地方出了点差错。"
+}

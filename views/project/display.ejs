@@ -1,0 +1,34 @@
+<!-- views/profile.ejs -->
+<!doctype html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<h1>个人主页</h1>
+	<a href="/logout" >登出</a>
+
+	<h3>项目信息</h3>
+
+
+	<% if ( flock.length > 0 ) { %>
+		<% for(var i=0; i<flock.length; i++) { %>
+			<div >————————————————————————————————————————————————————————</div>
+			<strong>项目名称</strong>:<div id = "id"> <%= flock[i].project_name %></div><br>
+			<strong>id</strong>:<div id = "id"> <%= flock[i].id %></div><br>
+			<strong>wechat</strong>: <div id = "wechat_link"><%= flock[i].wechat_link %></div><br>
+			<strong>default</strong>: <div id = "default_link"><%= flock[i].default_link %></div><br>
+			<strong>ios</strong>:<div id = "id"> <%= flock[i].ios_link %></div><br>
+			<strong>android</strong>:<div id = "id"> <%= flock[i].android_link %></div><br>
+			<strong>owner</strong>:<div id = "id"> <%= flock[i].user %></div><br>
+			<strong>项目位置</strong>: <div id = "project_link">
+
+			</div><br>
+			<a href='/project/edit/<%= flock[i].id %>'>修改</a>
+			<br>
+			<div >————————————————————————————————————————————————————————</div>
+		<% } %>
+	<% } %>
+	<a href='/project/new'>添加</a>
+</body>
+</html>

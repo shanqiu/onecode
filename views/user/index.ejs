@@ -1,0 +1,15 @@
+<div class="container">
+	<div class="jumbotron">
+  		<h1>Hello, world!</h1>
+  			<p>This like a first page for create a form </p>
+  			<p><a class="btn btn-primary btn-lg" href="/user/register" role="button">SingUp</a></p>
+	</div>
+	     <%
+            var u = res.req.flash('user');
+        %>
+
+        <% if (req.session.passport && req.session.passport.user) {%>
+        <span><%=req.session.passport.user%></span>
+        <span><%=u.username%></span>
+        <span><%=u.email%></span>
+</div>

@@ -1,0 +1,29 @@
+<!-- views/signup.ejs -->
+<!doctype html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<h1> 注册</h1>
+	<!-- show any messages that come back with authentication -->
+	<% if (message.length > 0) { %>
+		<div class="alert alert-danger"><%= message %></div>
+	<% } %>
+	<!-- LOGIN FORM -->
+	<form action="/signup" method="post">
+		<div>
+			<label>邮箱</label>
+			<input type="text" name="email">
+		</div>
+		<div>
+			<label>密码</label>
+			<input type="password" name="password">
+		</div>
+
+		<button type="submit" >注册</button>
+	</form>
+	<p>已注册？ <a href="/login">登录</a></p>
+	<p>或者去 <a href="/">主页</a>.</p>
+</body>
+</html>
