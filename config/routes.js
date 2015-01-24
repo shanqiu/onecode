@@ -66,7 +66,10 @@ module.exports.routes = {
     controller : 'ProjectController',
     action : 'new'
   },
-
+  '/project/display' :{
+    controller : 'ProjectController',
+    action : 'display'
+  },
   '/project/edit/:id' :{
     controller : 'ProjectController',
     action : 'edit'

@@ -20,7 +20,12 @@
 			<strong>default</strong>: <div id = "default_link"><%= flock[i].default_link %></div><br>
 			<strong>ios</strong>:<div id = "id"> <%= flock[i].ios_link %></div><br>
 			<strong>android</strong>:<div id = "id"> <%= flock[i].android_link %></div><br>
-			<strong>owner</strong>:<div id = "id"> <%= flock[i].user %></div><br>
+
+			<% //console.log("project: %j", flock[i]);
+			if (flock[i].users.length > 0) { %>
+			<strong>owner</strong>:<div id = "id"> <%= flock[i].users[0].username %></div><br>
+			<% }%>
+
 			<strong>项目位置</strong>: <div id = "project_link">
 
 			</div><br>

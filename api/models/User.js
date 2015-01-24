@@ -6,6 +6,7 @@ var User = {
     username  : { type: 'string', unique: true },
     email     : { type: 'email',  unique: true },
     passports : { collection: 'Passport', via: 'user' },
+    //relations : { collection: 'Relation', via: 'user' },
 
     projects : { collection: 'Project', via: 'users', dominant: true }
   }

@@ -9,15 +9,15 @@ var ProjectController = {
 
   display: function (req, res) {
     if (req.isAuthenticated()) {
-        console.log('Test only');
+        console.log('display only');
 
-        Project.find(function foundProjects(err, projects){
+        Project.find()
+        .populate('users')
+        .exec(function (err, projects){
             if(err) return next(err);
             res.view({
                 flock : projects
             });
-        }).populate("users").exec(function (e, r) {
-        console.log(r.toJSON());
         });
     } else {
         console.log("not log in");
@@ -47,28 +47,112 @@ var ProjectController = {
     // us[0] = req.user;
     // console.log('Test only: create'+req.user.username);
 
-    Project.create({
-    	wechat_link : req.body.wechat_link, 
-        ios_link : req.body.ios_link,
-        default_link : req.body.default_link,
-        android_link : req.body.android_link,
-        project_name : req.body.project_name
-    }).exec(function(err, project){
-    	if(err){
-    		console.log("err");
-    	}else{
-            Project.findOne({project_name: req.body.project_name}, function (err, game){
-                User.create({
-                  username: 'map1'
-                }).exec(console.log);
-              });
-            // project.users.push(req.user);
-            // project.save(function(err){});
-            // req.user.projects.add(project.id);
-            // req.user.save();
-            res.redirect('/project/display');
-    	}
-    }); 
+    console.log("trace: project.create");
+    User.findOne(req.user.id).exec(function(err, user) {
+        if(err)  {
+            // handle error
+            console.log("err on user.findone: %j", err);
+        } else {
+            user.projects.add({
+                wechat_link : req.body.wechat_link, 
+                ios_link : req.body.ios_link,
+                default_link : req.body.default_link,
+                android_link : req.body.android_link,
+                project_name : req.body.project_name,
+            });
+            user.save(function(err) {
+                if(err) {
+                    console.log("err on user.save: %j", err);
+                } else {
+                    console.log('saved user %j', user);
+                    User.findOne(req.user.id)
+                    .populate('projects')
+                    .exec(function (err, user){
+                        if(err) {
+                            console.log("err on user.save: %j", err);
+                        }else {
+                            console.log('saved user %j', user);
+                            res.redirect('/project/display');
+                        } 
+                    });
+                }
+            });
+        }
+    });
+
+
+    
+    // Project.create({
+    //     wechat_link : req.body.wechat_link, 
+    //     ios_link : req.body.ios_link,
+    //     default_link : req.body.default_link,
+    //     android_link : req.body.android_link,
+    //     project_name : req.body.project_name,
+    // }).exec(function(err, project){
+    //     if(err){
+    //        console.log("err on Project.create: %j", err);
+    //     }else{
+    //         console.log("saved %j", project);
+    //         console.log("user to add: %j", req.user);
+    //         console.log("project.users %j", project.users);
+
+    //         req.user.projects.add(project.id);
+    //         req.user.save(function(err) {
+    //             if(err) {
+    //                 console.log("err on user.save: %j", err);
+    //             } else {
+    //                 console.log('saved user %j', req.user);
+    //                 res.redirect('/project/display');
+    //             }
+    //         });
+
+    //         // project.users.add(req.user.id);
+    //         // console.log("project.users added %j", project.users);
+    //         // project.save(function(err) {
+    //         //     if(err) {
+    //         //         console.log("err on project.save: %j", err);
+    //         //     } else {
+    //         //         console.log("saved project %j", project);
+    //         //         // console.log("saved user %j", User);
+    //         //         // res.redirect('/project/display');
+    //         //         req.user.projects.add(project.id);
+    //         //         req.user.save(function(err) {
+    //         //             if(err) {
+    //         //                 console.log("err on user.save: %j", err);
+    //         //             } else {
+    //         //                 console.log('saved user %j' + req.user);
+    //         //                 res.redirect('/project/display');
+    //         //             }
+    //         //         });
+    //         //     }
+    //         // });
+    //     }
+    // });
+    
+
+    // Project.create({
+    // 	wechat_link : req.body.wechat_link, 
+    //     ios_link : req.body.ios_link,
+    //     default_link : req.body.default_link,
+    //     android_link : req.body.android_link,
+    //     project_name : req.body.project_name
+    // }).exec(function(err, project){
+    // 	if(err){
+    // 		console.log("err");
+    // 	}else{
+    //         Project.findOne({project_name: req.body.project_name}, function (err){
+    //             User.create({
+    //               username: req.user.username
+    //             }).exec(console.log);
+    //           });
+    //         console.log("user is "+ req.user);
+    //         // project.users.push(req.user);
+    //         // project.save(function(err){});
+    //         // req.user.projects.add(project.id);
+    //         // req.user.save();
+    //         res.redirect('/project/display');
+    // 	}
+    // }); 
     
   },
     edit : function (req, res, next){
