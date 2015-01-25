@@ -5,6 +5,8 @@
  * should look. It currently includes the minimum amount of functionality for
  * the basics of Passport.js to work.
  */
+var url = require("url");
+
 var AuthController = {
   /**
    * Render the login page
@@ -49,11 +51,24 @@ var AuthController = {
       , slug: key
       };
     });
+    var referalparam = "";
+    
+    // console.log("req headers %j", req.headers);
+    // console.log("req originalURL %j", req.originalUrl);
+    // console.log("req query referal %j", req.query.referal);
+    // console.log("req path %j", req.path);
+    // console.log("req.get('Host') %j", req.get('Host'));
+    var originalUrl = req.query.referal;
+    if (originalUrl) {
+      // console.log("referal: "+originalUrl);
+      referalparam = "referal=" + encodeURIComponent(originalUrl);
+    }    
 
     // Render the `auth/login.ext` view
     res.view({
       providers : providers
     , errors    : req.flash('error')
+    , referal   : referalparam
     });
   },
 
@@ -171,7 +186,15 @@ var AuthController = {
         // res.view({
         //         user : req.user
         // });
-        res.redirect('/');
+        var targetUrl = '/';
+        var referal = req.query.referal;
+        if (referal) {
+          // console.log("decoded referal %j", referal);
+          targetUrl = referal;
+        } else {
+          // console.log("redirect to default / ");
+        }
+        res.redirect(targetUrl);
       });
     });
   },

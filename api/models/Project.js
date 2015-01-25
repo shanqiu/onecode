@@ -8,8 +8,8 @@ var Project = {
 	    android_link : { type: 'string', unique: false },
 	    default_link : { type: 'string', unique: false },
 	    project_name: { type: 'string', unique: false },
-	    //relations : {collection: 'Relation', via: 'project'}
-	    users : { collection: 'User', via: 'projects' }
+	   	relations : {collection: 'Relation', via: 'project'}
+	    //users : { collection: 'User', via: 'projects' }
 	},
 	// beforeCreate: function(values, next) {
 	//   next();
