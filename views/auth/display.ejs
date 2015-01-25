@@ -16,18 +16,22 @@
 
         <% if (req.session.passport && req.session.passport.user) {%>
         <span><%=req.user.username%></span>
-        <a href="/project/new" > 注册项目 </a>
+            <a href="/project/new" > 注册项目 </a>
+            <a href="/project/display" > 展示项目 </a>
         <h3>
-        <a href="/logout" > 登出 </a>
+            <a href="/logout" > 登出 </a>
+        </h3>
+<!--         <h3>
+            <a href="/project/new" > project/new </a>
+        </h3> -->
         <%} else {%>
         <h3>
-        <a href="/login" > 登录 </a>
+            <a href="/login" > 登录 </a>
+            <a href="/user/register" > 注册 </a>
+        </h3>
         <%}%>
-          <a href="/user/register" > 注册 </a>
-        </h3>
-        <h3>
-            <a href="/project/new" > project/new </a>
-        </h3>
+
+
     </div>
  
 </div>

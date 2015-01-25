@@ -25,9 +25,17 @@
 			if (flock[i].relations.length > 0) { %>
 			<strong>Access</strong>:<div id = "id"> <%= flock[i].relations[0].access %></div><br>
 			<% }%>
+<%          
+			var link = req.protocol + '://' + req.get('Host') + '/project/link/' + flock[i].id;
+			var qrImageUrl = 'http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent(link);
+%>
+			<img src ='<%=qrImageUrl%>' />
+			<a href ='<%=qrImageUrl%>' >
+				<%=qrImageUrl%>
+			</a>
 
 			<strong>项目位置</strong>: <div id = "project_link">
-
+			<a href='/project/link/<%= flock[i].id %>'>项目链接</a>
 			</div><br>
 			<a href='/project/edit/<%= flock[i].id %>'>修改</a>
 			<br>

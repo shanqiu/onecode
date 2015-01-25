@@ -74,4 +74,8 @@ module.exports.routes = {
     controller : 'ProjectController',
     action : 'edit'
   },
+  '/project/link/:id' :{
+    controller : 'ProjectController',
+    action : 'link'
+  },
 };
