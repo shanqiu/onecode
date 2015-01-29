@@ -7,16 +7,118 @@
  */
 var ProjectController = {
 
-  display: function (req, res) {
+  findAll: function (req, res) {
     if (req.isAuthenticated()) {
         //console.log('display only');
-
         Project.find()
         .populate('relations')
         .exec(function (err, projects){
-            if(err) return next(err);
+            if(err) return res.negotiate(err);
+            return res.json(projects);
+        });
+    } else {
+        return res.forbidden(); 
+    }
+    
+  },
+
+  findOne: function (req, res) {
+    if (req.isAuthenticated()) {
+        //console.log('display only');
+        Project.findOne(req.param('id'))
+        .populate('relations')
+        .exec(function (err,project){
+            if (err) {
+              return res.serverError();
+            }
+
+            if (project) {
+                //console.log("the project i want %j ", project);
+                //console.log("the project's relation %j ", project.relations);
+
+                for (var i = project.relations.length - 1; i >= 0; i--) {
+                    if (project.relations[i].user == req.user.id) {
+                        return res.json(project);  
+                    }
+                };
+                return res.forbidden(); //403
+            } else {
+              return res.notFound(); //404
+            }
+        });
+
+    } else {
+        //console.log("not log in");
+        return res.forbidden();
+    }
+    
+  },
+
+  findMemberGroup: function (req, res) {
+    if (req.isAuthenticated()) {
+        Project.findOne(req.param('id'))
+            .populate('relations')
+            .exec(function (err,project){
+                if (err) {
+                  return res.serverError();
+                }
+                if (project) {
+                    return res.json(project.relations);  
+                } else {
+                  return res.notFound(); //404
+                }
+        });
+    } else {
+        return res.forbidden();
+    }
+  },
+
+  findMember: function (req, res) {
+    if (req.isAuthenticated()) {
+        Project.findOne(req.param('id'))
+            .populate('relations')
+            .exec(function (err,project){
+                if (err) {
+                  return res.serverError();
+                }
+                if (project) {
+
+                    var arr = new Array();
+                    for (var i = project.relations.length - 1; i >= 0; i--) {
+                        if (project.relations[i].user == req.param('uid')) {
+                            arr.push(project.relations[i]);
+                        }
+                    };
+                    return res.json(arr);
+
+                } else {
+                  return res.notFound(); //404
+                }
+        });
+    } else {
+        return res.forbidden();
+    }
+  },
+
+  display: function (req, res) {
+    if (req.isAuthenticated()) {
+        Relation.find()
+        // .where({access: ['admin', 'xxx', 'xxx']})
+        .populate('user', {email: req.user.email})
+        .populate('project')
+        .exec(function (err, relations){
+            if(err) return res.negotiate(err);
+            console.log(relations);
+
+            var arr = new Array();
+            for (var i = relations.length - 1; i >= 0; i--) {
+                if (relations[i].user && relations[i].user.id == req.user.id) {
+                    arr.push(relations[i]);
+                }
+            };
+
             res.view({
-                flock : projects
+                flock : arr
             });
         });
     } else {
@@ -24,24 +126,11 @@ var ProjectController = {
         var referal = encodeURIComponent(req.originalUrl);
         res.redirect('/login?referal=' + referal);
     }
-        
-    
-	// Project.findAll().exec(function(err, doc) {
-	//  	if(err){
-	//  		console.log("err");
-	//  	}else{
-	// 	    res.view({
-	// 	    	req : req, 
-	// 	    	res : res,
-	// 	    	flock: doc
-	// 	    });
-	// 	}	
-	//  });
 
   },
 
   'new': function(req, res){
-    console.log('trace project.new');
+    //console.log('trace project.new');
     if (req.isAuthenticated()) {
         res.view();
     }else{
@@ -52,9 +141,23 @@ var ProjectController = {
     }
   },
 
-  addMember: function(req, res){
-
+  formGroup: function(req, res){
+    if (req.isAuthenticated()) {
+        res.view();
+    } else {
+        return res.forbidden();
+    }
   },
+
+  formMemberGroup: function(req, res){
+    if (req.isAuthenticated()) {
+        res.view();
+    } else {
+        return res.forbidden();
+    }
+  },
+
+
 
   create: function(req, res){
     //console.log("trace: project.create");
@@ -88,9 +191,59 @@ var ProjectController = {
         res.redirect('/login?referal=' + referal);
     }
     
-    },
-    edit : function (req, res, next){
+  },
 
+  addOne : function(req, res) {
+    if (req.isAuthenticated()) {
+        Project.create({
+            wechat_link : req.body.wechat_link, 
+            ios_link : req.body.ios_link,
+            default_link : req.body.default_link,
+            android_link : req.body.android_link,
+            project_name : req.body.project_name,
+        }).exec(function(err, project){
+            if(err){
+               console.log("err on Project.create: %j", err);
+            }else{
+                Relation.create({
+                    user: req.user.id,
+                    project: project.id,
+                    access: 'admin'
+                }).exec(function(err, relation) {
+                    if(err){
+                        console.log("err on Relation.create: %j", err);
+                    }else{
+                        res.json(project);
+                    }
+                });
+            }
+        });
+    } else {
+        return res.forbidden();
+    }
+  },
+
+  addMember: function(req, res){
+    if (req.isAuthenticated()) {
+        Relation.create({
+            user: req.body.user,
+            project: req.param('id'),
+            access: req.body.access
+
+        }).exec(function(err, relation){
+            if(err){
+                return res.negotiate(err);
+            }else{
+                res.json(relation);
+            }
+        });
+    } else {
+        return res.forbidden();
+    }
+  },
+
+  edit : function (req, res, next){
+    if (req.isAuthenticated()) {
         Project.findOne(req.param('id'), function foundProject(err,project){
             if(err) return next(err);
             if(!project) return next();
@@ -99,10 +252,57 @@ var ProjectController = {
                 project : project
             });
         });
+    } else {
+       return res.forbidden(); 
+    }
 
-    },
+  },
+
+  formOne: function(req, res, next){
+    if (req.isAuthenticated()) {
+        Project.findOne(req.param('id'), function foundProject(err,project){
+            if(err) return next(err);
+            if(!project) return next();
+
+            res.view({
+                project : project
+            });
+        });
+    } else {
+       return res.forbidden();  
+    }
+  },
+
+  formMember: function(req, res, next){
+    if (req.isAuthenticated()) {
+        Project.findOne(req.param('id'))
+            .populate('relations')
+            .exec(function (err, project){
+                if (err) {
+                    return res.negotiate(err);
+                } else {
+                    console.log("member project is %j ", project);
+                    var arr = new Array();
+                    for (var i = project.relations.length - 1; i >= 0; i--) {
+                        if (project.relations[i].user == req.param('uid')) {
+                            arr.push(project.relations[i]);
+                        }
+                    };
+                    console.log("arr project is %j ", arr);
+                    res.view({
+                        relations : arr[0]
+                    });
+                    
+                }
+        });
+    } else {
+        return res.forbidden();
+    }
+  },
+
     //unfinished
-    update: function(req, res, next){
+  update: function(req, res, next){
+    if (req.isAuthenticated()) {
         Project.update(req.param('id'), req.params.all(), function projectUpdated(err){
             if(err){
                 return res.redirect('/project/edit/' + req.param('id'));
@@ -110,9 +310,60 @@ var ProjectController = {
 
             res.redirect('/project/display');
         });
-    },
 
-    delete: function(req, res, next){
+    } else {
+        return res.forbidden();
+    }
+  },
+
+  updateOne: function(req, res, next){
+    if (req.isAuthenticated()) {
+        Project.update(req.param('id'), req.params.all(), function projectUpdated(err){
+            if(err){
+                
+            }
+
+            res.redirect('/api/projects/'+req.param('id'));
+        });
+    } else {
+       return res.forbidden(); 
+    }
+  },
+
+  updateMember: function (req, res, next){
+    if (req.isAuthenticated()) {
+        Project.findOne(req.param('id'))
+        .populate('relations')
+        .exec(function (err, project){
+            if (err) {
+                return res.negotiate(err);
+            } else {
+                for (var i = project.relations.length - 1; i >= 0; i--) {
+                    if (project.relations[i].user == req.param('uid')) {
+                        project.relations[i].access = req.body.access; 
+                        project.relations[i].save(function(err) {
+                            return res.negotiate(err);
+                        });
+                        return res.json(project);
+                    }
+                };
+            }
+        });
+    } else {
+        return res.forbidden(); 
+    }
+
+        // Relation.update({user}, req.params.all(), function projectUpdated(err){
+        //     if(err){
+                
+        //     }
+
+        //     res.redirect('/api/projects/'+req.param('id'));
+        // });
+  },
+
+  delete: function(req, res, next){
+    if (req.isAuthenticated()) {
         Project.findOne(req.param('id'), function foundProject(err,user){
             if(err) return next(err);
             if(!user) return next('User doen\'t exist/');
@@ -122,8 +373,57 @@ var ProjectController = {
             });
             res.redirect('/project/display');
         });
-    },
-    link: function(req, res, next){
+    } else {
+        return res.forbidden(); 
+    }
+  },
+
+  delOne: function(req, res, next){
+    if (req.isAuthenticated()) {
+        Project.findOne(req.param('id'), function foundProject(err,project){
+            if(err) return next(err);
+            if(!project) return next('User doen\'t exist/');
+
+            Project.destroy(req.param('id'), function projectDestroyed(err){
+                if(err) return next(err);
+            });
+            res.ok();
+        });
+    } else {
+        return res.forbidden(); 
+    }
+  },
+
+  delMember: function(req, res){
+    if (req.isAuthenticated()) {
+        Project.findOne(req.param('id'))
+        .populate('relations')
+        .exec(function (err, project){
+            if (err) {
+                return res.negotiate(err);
+            } else {
+                for (var i = project.relations.length - 1; i >= 0; i--) {
+                    if (project.relations[i].user == req.param('uid')) {
+                         
+                         var relationId = project.relations[i].id;
+                        // project.relations[i].save(function(err) {
+                        //     return res.negotiate(err);
+                        Relation.destroy(req.param(relationId), function relationDestroyed(err){
+                            if(err) return res.negotiate(err);
+                        });
+                    }
+                    return res.ok();                        
+                };
+            
+                return res.notFound();
+            }
+        });
+    } else {
+        return res.forbidden();
+    }
+  },
+
+  link: function(req, res, next){
         var userAgent = req.get('User-Agent');
         console.log("userAgent: %j", userAgent);
 
@@ -159,10 +459,10 @@ var ProjectController = {
         // res.view({
         // project : project // get the user out of session and pass to template
         // });
-    },
+  },
 
 
-    parse: function (uaStr) {
+  parse: function (uaStr) {
         var agent = {
             platform: {},
             browser: {},

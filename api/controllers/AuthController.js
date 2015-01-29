@@ -32,9 +32,40 @@ var AuthController = {
    * @param {Object} req
    * @param {Object} res
    */
+
+  findAll: function(req, res) {
+      User.find()
+        .populate('relations')
+        .exec(function (err, users){
+            if(err) return res.negotiate(err);
+            return res.json(users);
+        });
+  },
+  findOne: function(req, res) {
+    
+    if (req.user) {
+      User.findOne(req.param('id'), function(err,user){
+        console.log("err: %j user: %j", err, user);
+        if(err) {
+          return res.serverError();
+        }
+        if (user) {
+          if(user.id == req.user.id){
+            return res.json(user);
+          }else{
+            return res.forbidden();
+          }
+        } else {
+          return res.notFound();
+        }
+      });
+    } else {
+      return res.forbidden();
+    }
+  },
   display: function(req, res){
     // res.view({user:req.user, aaa:"bbb"});
-     res.view();
+    res.view();
   },
   login: function (req, res) {
     var strategies = sails.config.passport
@@ -160,7 +191,7 @@ var AuthController = {
 
       switch (action) {
         case 'register':
-          res.redirect('/register');
+          res.redirect('/user/register');
           break;
         case 'disconnect':
           res.redirect('back');

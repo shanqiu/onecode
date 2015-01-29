@@ -46,6 +46,8 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
   'get /':'AuthController.display',
+  'get /api/users/:id':'AuthController.findOne',
+  'get /api/users':'AuthController.findAll',
   'get /login': 'AuthController.login',
   'get /logout': 'AuthController.logout',
   // 'get /user/register': 'AuthController.register',
@@ -57,6 +59,25 @@ module.exports.routes = {
   'get /auth/:provider': 'AuthController.provider',
   'get /auth/:provider/callback': 'AuthController.callback',
   'get /auth/:provider/:action': 'AuthController.callback',
+
+  'get /api/projects':'ProjectController.findAll',
+  'get /api/projects/:id':'ProjectController.findOne',
+  'get /form/projects':'ProjectController.formGroup',
+  'post /api/projects':'ProjectController.addOne',
+  'get /form/projects/:id':'ProjectController.formOne',
+  'post /api/projects/:id':'ProjectController.updateOne',
+
+  'delete /api/projects/:id':'ProjectController.delOne',
+  
+  'get /api/projects/:id/members':'ProjectController.findMemberGroup',
+  'get /form/projects/:id/members':'ProjectController.formMemberGroup',
+  'post /api/projects/:id/members':'ProjectController.addMember',
+  'get /api/projects/:id/members/:uid':'ProjectController.findMember',
+  'get /form/projects/:id/members/:uid':'ProjectController.formMember',
+  'delete /api/projects/:id/members/:uid':'ProjectController.delMember',
+  'post /api/projects/:id/members/:uid':'ProjectController.updateMember',
+
+
 
   '/project/create' :{
     controller : 'ProjectController',

@@ -27,7 +27,40 @@
             + Import stylesheets from other directories
             + Use a different or additional preprocessor, like SASS, SCSS or Stylus
     -->
+    <script type="text/javascript" src="/js/jquery-1.11.2.min.js"></script>
+    <script>
+    $(document).ready(function(){
+      console.log("document ready");
+      $("#b01").click(function(){
+        console.log("start delete bt1!");
 
+        $.ajax({
+            url: '/api/projects/'+<%= req.param('id') %>,
+            type: 'DELETE',
+            success: function (result) {
+                // Do something with the result
+                console.log("delete success!");
+
+            }
+        });
+      });
+
+      $("#b02").click(function(){
+        console.log("start delete bt2!");
+
+        $.ajax({
+
+            url: '/api/projects/'+<%= req.param('id') %>+'/members/'+<%= req.param('uid') %>,
+            type: 'DELETE',
+            success: function (result) {
+                // Do something with the result
+                console.log("delete success!");
+
+            }
+        });
+      });
+    });
+    </script>
     <!--STYLES-->
     <link rel="stylesheet" href="/styles/importer.css">
     <!--STYLES END-->
@@ -89,6 +122,7 @@
 
     <!--SCRIPTS-->
     <script src="/js/dependencies/sails.io.js"></script>
+    <script src="/js/jquery-1.11.2.min.js"></script>
     <!--SCRIPTS END-->
   </body>
 </html>

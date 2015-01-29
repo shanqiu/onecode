@@ -14,19 +14,18 @@
 	<% if ( flock.length > 0 ) { %>
 		<% for(var i=0; i<flock.length; i++) { %>
 			<div >————————————————————————————————————————————————————————</div>
-			<strong>项目名称</strong>:<div id = "id"> <%= flock[i].project_name %></div><br>
-			<strong>id</strong>:<div id = "id"> <%= flock[i].id %></div><br>
-			<strong>wechat</strong>: <div id = "wechat_link"><%= flock[i].wechat_link %></div><br>
-			<strong>default</strong>: <div id = "default_link"><%= flock[i].default_link %></div><br>
-			<strong>ios</strong>:<div id = "id"> <%= flock[i].ios_link %></div><br>
-			<strong>android</strong>:<div id = "id"> <%= flock[i].android_link %></div><br>
+			<strong>项目名称</strong>:<div id = "id"> <%= flock[i].project.project_name %></div><br>
+			<strong>id</strong>:<div id = "id"> <%= flock[i].project.id %></div><br>
+			<strong>wechat</strong>: <div id = "wechat_link"><%= flock[i].project.wechat_link %></div><br>
+			<strong>default</strong>: <div id = "default_link"><%= flock[i].project.default_link %></div><br>
+			<strong>ios</strong>:<div id = "id"> <%= flock[i].project.ios_link %></div><br>
+			<strong>android</strong>:<div id = "id"> <%= flock[i].project.android_link %></div><br>
 
-			<% //console.log("project: %j", flock[i]);
-			if (flock[i].relations.length > 0) { %>
-			<strong>Access</strong>:<div id = "id"> <%= flock[i].relations[0].access %></div><br>
-			<% }%>
+			
+			<strong>Access</strong>:<div id = "id"> <%= flock[i].access %></div><br>
+			
 <%          
-			var link = req.protocol + '://' + req.get('Host') + '/project/link/' + flock[i].id;
+			var link = req.protocol + '://' + req.get('Host') + '/project/link/' + flock[i].project.id;
 			var qrImageUrl = 'http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent(link);
 %>
 			<img src ='<%=qrImageUrl%>' />
@@ -35,9 +34,11 @@
 			</a>
 
 			<strong>项目位置</strong>: <div id = "project_link">
-			<a href='/project/link/<%= flock[i].id %>'>项目链接</a>
+			<a href='/project/link/<%= flock[i].project.id %>'>项目链接</a>
 			</div><br>
-			<a href='/project/edit/<%= flock[i].id %>'>修改</a>
+			<a href='/api/projects/<%= flock[i].project.id %>'>项目API</a>
+			</div><br>
+			<a href='/project/edit/<%= flock[i].project.id %>'>修改</a>
 			<br>
 			<div >————————————————————————————————————————————————————————</div>
 		<% } %>

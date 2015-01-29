@@ -1,0 +1,52 @@
+<!-- views/signup.ejs -->
+<!doctype html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<h1> 注册一个项目</h1>
+	<!-- show any messages that come back with authentication -->
+	<!-- LOGIN FORM -->
+
+	</div><br>
+	<div >————————————————————————————————————————————————————————</div>
+	<form method="post" action="/api/projects/<%= project.id %>">
+		<div >
+			<label>default</label>
+			<input type="text" name="default_link" value="<%=project.default_link %>">
+		</div>
+		<div >
+			<label>wechat</label>
+			<input type="text"  name="wechat_link">
+		</div>
+		<div >
+			<label>ios</label>
+			<input type="text" name="ios_link">
+		</div>
+		<div >
+			<label>android</label>
+			<input type="text" name="android_link">
+		</div>
+		<div >
+			<label>项目名称</label>
+			<input type="text" name="project_name">
+		</div>
+		<button type="submit" >提交</button>
+	</form>
+	<br>
+
+	<br>
+	<div >————————————————————————————————————————————————————————</div>
+	<strong>项目名称</strong>:<div id = "id"> <%= project.project_name %></div><br>
+	<strong>id</strong>:<div id = "id"> <%= project.id %></div><br>
+	<strong>default</strong>: <div id = "wechat_link"><%= project.default_link %></div><br>
+	<strong>wechat</strong>: <div id = "wechat_link"><%= project.wechat_link %></div><br>
+	<strong>android</strong>: <div id = "wechat_link"><%= project.android_link %></div><br>
+	<strong>ios</strong>: <div id = "wechat_link"><%= project.ios_link %></div><br>
+	<strong>项目位置</strong>: <div id = "project_link"><br>
+	<div >————————————————————————————————————————————————————————</div>
+	
+	<a href="/project/display" >个人主页</a>
+</body>
+</html>
