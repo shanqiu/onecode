@@ -22,33 +22,108 @@ var ProjectController = {
     
   },
 
+
   findOne: function (req, res) {
     if (req.isAuthenticated()) {
-        //console.log('display only');
-        Project.findOne(req.param('id'))
-        .populate('relations')
-        .exec(function (err,project){
+        Relation.find()
+        .where({project: req.param('id')})
+        .populate('user')
+        .exec(function (err, relations) {
             if (err) {
-              return res.serverError();
+                return res.negotiate(err);
             }
 
-            if (project) {
-                //console.log("the project i want %j ", project);
-                //console.log("the project's relation %j ", project.relations);
-
-                for (var i = project.relations.length - 1; i >= 0; i--) {
-                    if (project.relations[i].user == req.user.id) {
-                        return res.json(project);  
+            var members = new Array();
+            var hasMe = false;
+            for (var i = 0; i < relations.length; i++) {
+                var rel = relations[i];
+                if (rel.user && rel.access != "none") {
+                    if (rel.user.id == req.user.id) {                       
+                        hasMe = true;
                     }
-                };
-                return res.forbidden(); //403
-            } else {
-              return res.notFound(); //404
+                    delete rel['project'];
+                    delete rel.user['relations'];
+                    delete rel.user['passports'];
+                    members.push(rel);
+                }
             }
+
+            if (!hasMe) {
+                res.forbidden();
+            }
+
+            // access
+            Project.findOne(req.param('id'))
+            .exec(function (err, project){
+                if (err) {
+                    return res.negotiate(err);
+                }
+
+                if (!project) {
+                    res.notFound();
+                }
+
+                project['members'] = members;
+                res.json(project);
+            });
+
         });
+        //console.log('display only');
+        // Project.findOne(req.param('id'))
+        // .populate('relations')
+        // .exec(function (err,project){
+        //     if (err) {
+        //       return res.serverError();
+        //     }
+        //     if (project) {
+        //         var hasMe = false;
+
+        //         for (var i = project.relations.length - 1; i >= 0; i--) {
+
+        //             if (project.relations[i].user == req.user.id && ( project.relations[i].access == "admin" || project.relations[i].access == "collarator" )) {                       
+        //                 hasMe = true;
+        //             }
+
+        //         };
+
+        //         //find related Users
+        //         console.log("has me is " + hasMe);
+                
+
+        //         User.find().exec(function (err, users){
+        //             var userArr = new Array();
+        //             console.log("yoo");
+        //             for (var i = 0; i < users.length; i++) {
+        //                 for (var j = 0; j < project.relations.length; j++) {
+        //                     if(users[i].id == project.relations[j].user){
+                                
+        //                         project.relations.push(users[i]);
+        //                     }
+        //                 };
+        //             };
+
+        //             var finalobj={};
+        //             for(var _obj in project) finalobj[_obj ]=project[_obj];
+        //             //  for(var _obj in users) finalobj.relations[_obj ]=users[_obj];
+        //             console.log("oo %j", finalobj);
+
+        //             if(hasMe){
+        //                 return res.json(project);  
+        //             } else {
+        //                 return res.forbidden();
+        //             }
+        //         });
+                
+        //         // project.users = project.relations;
+        //         // delete project['relations'];
+
+            
+        //     } else {
+        //       return res.notFound(); //404
+        //     }
+        // });
 
     } else {
-        //console.log("not log in");
         return res.forbidden();
     }
     
@@ -56,18 +131,55 @@ var ProjectController = {
 
   findMemberGroup: function (req, res) {
     if (req.isAuthenticated()) {
-        Project.findOne(req.param('id'))
-            .populate('relations')
-            .exec(function (err,project){
-                if (err) {
+        Relation.find()
+        .where({project: req.param('id')})
+        .populate('user')
+        .exec(function (err, relations){
+            if (err) {
                   return res.serverError();
+            }
+
+            var array = new Array();
+            var hasMe = false;
+            for (var i = 0; i < relations.length; i++) {
+                // isMe
+                console.log("relations[i].user %j", relations[i]);
+                if(relations[i].user){
+                    if (relations[i].user.id == req.user.id && ( relations[i].access == "admin" || relations[i].access == "collarator" )) {
+                        hasMe = true;
+                        console.log("00000000000");
+                    }
+                    if (relations[i].user) {
+                        array.push(relations[i].user);
+                    }
                 }
-                if (project) {
-                    return res.json(project.relations);  
-                } else {
-                  return res.notFound(); //404
-                }
+            };
+
+            if(hasMe){
+                return res.json(array);
+            } else {
+                return res.forbidden();
+            }
+            
         });
+
+        // Project.findOne(req.param('id'))
+        //     .populate('relations')
+        //     .exec(function (err,project){
+        //         if (err) {
+        //           return res.serverError();
+        //         }
+        //         if (project) {
+        //             for (var i = project.relations.length - 1; i >= 0; i--) {
+        //                 if (project.relations[i].user == req.user.id && ( project.relations[i].access == "admin" || project.relations[i].access == "collarator" )) {
+        //                     return res.json(project.relations);  
+        //                 }
+        //             };
+        //             return res.forbidden();  
+        //         } else {
+        //           return res.notFound(); //404
+        //         }
+        // });
     } else {
         return res.forbidden();
     }
@@ -84,12 +196,35 @@ var ProjectController = {
                 if (project) {
 
                     var arr = new Array();
+                    var hasMe = false;
+                    var hasHim = false;
                     for (var i = project.relations.length - 1; i >= 0; i--) {
+
+                        if (project.relations[i].user == req.user.id && ( project.relations[i].access == "admin" || project.relations[i].access == "collarator" )) {
+                            hasMe = true;
+                            if (req.param('uid') == req.user.id) {
+                                return res.json(req.user);
+                            }
+                        }
                         if (project.relations[i].user == req.param('uid')) {
-                            arr.push(project.relations[i]);
+                            hasHim = true;
+                            // arr.push(project.relations[i]);
                         }
                     };
-                    return res.json(arr);
+                    if (hasMe) {
+                        if (hasHim) {
+                            User.findOne(req.param('uid'))
+                            .exec(function (err, user){
+                                if (err) return res.negotiate(err);
+                                return res.json(user);
+                            });
+                        } else {
+                            return res.notFound();
+                        }
+                    } else {
+                        return res.forbidden();
+                    }
+                    // return res.json(arr);
 
                 } else {
                   return res.notFound(); //404
@@ -102,24 +237,31 @@ var ProjectController = {
 
   display: function (req, res) {
     if (req.isAuthenticated()) {
+
         Relation.find()
         // .where({access: ['admin', 'xxx', 'xxx']})
         .populate('user', {email: req.user.email})
         .populate('project')
         .exec(function (err, relations){
             if(err) return res.negotiate(err);
-            console.log(relations);
-
+            
             var arr = new Array();
             for (var i = relations.length - 1; i >= 0; i--) {
-                if (relations[i].user && relations[i].user.id == req.user.id) {
-                    arr.push(relations[i]);
-                }
+                // judge permission
+                // user能看所有参与的项目的信息
+               // if(relations[i].access == 'admin' || relations[i].access == 'collarator'){
+                    if (relations[i].user && relations[i].user.id == req.user.id) {
+                        if (relations[i].project) {
+                            arr.push(relations[i]);
+                        };
+                    }
+               // }
             };
-
+            console.log(arr);
             res.view({
                 flock : arr
             });
+
         });
     } else {
         //console.log("not log in");
@@ -195,6 +337,7 @@ var ProjectController = {
 
   addOne : function(req, res) {
     if (req.isAuthenticated()) {
+
         Project.create({
             wechat_link : req.body.wechat_link, 
             ios_link : req.body.ios_link,
@@ -225,21 +368,46 @@ var ProjectController = {
 
   addMember: function(req, res){
     if (req.isAuthenticated()) {
-        Relation.create({
-            user: req.body.user,
-            project: req.param('id'),
-            access: req.body.access
 
-        }).exec(function(err, relation){
-            if(err){
-                return res.negotiate(err);
-            }else{
-                res.json(relation);
+        // judge if the current user is the admin of the project
+        Relation.find()
+        .where({project: req.param('id')})
+        .exec(function (err, relations){
+            if (err) {
+                  return res.serverError();
             }
-        });
+
+            var hasMe = false;
+            for (var i = 0; i < relations.length; i++) {
+                // isMe
+                if (relations[i].user){
+                    if (relations[i].user == req.user.id && relations[i].access == "admin" ) {
+                        hasMe = true;
+                    }
+                }
+            };
+
+            if(hasMe){
+                Relation.create({
+                    user: req.body.user,
+                    project: req.param('id'),
+                    access: req.body.access
+
+                }).exec(function (err, relation){
+                    if(err){
+                        return res.negotiate(err);
+                    }else{
+                        res.json(relation);
+                    }
+                });
+            } else {
+                return res.forbidden();
+            }
+            
+        });  
     } else {
         return res.forbidden();
-    }
+    } 
   },
 
   edit : function (req, res, next){
@@ -300,10 +468,12 @@ var ProjectController = {
     }
   },
 
-    //unfinished
+
   update: function(req, res, next){
     if (req.isAuthenticated()) {
-        Project.update(req.param('id'), req.params.all(), function projectUpdated(err){
+
+
+            Project.update(req.param('id'), req.params.all(), function projectUpdated(err){
             if(err){
                 return res.redirect('/project/edit/' + req.param('id'));
             }
@@ -318,40 +488,74 @@ var ProjectController = {
 
   updateOne: function(req, res, next){
     if (req.isAuthenticated()) {
-        Project.update(req.param('id'), req.params.all(), function projectUpdated(err){
-            if(err){
-                
-            }
-
-            res.redirect('/api/projects/'+req.param('id'));
-        });
-    } else {
-       return res.forbidden(); 
-    }
+        Project.findOne(req.param('id'))
+            .populate('relations')
+            .exec(function (err, project){
+                if (err) {
+                    return res.negotiate(err);
+                } else {
+                    for (var i = project.relations.length - 1; i >= 0; i--) {
+                        //judge if the user is the admin or collabrator of the project
+                        if (project.relations[i].user == req.param('uid')) {
+                            Project.update(req.param('id'), req.params.all(), function projectUpdated(err){
+                                if(err) return err.negotiate();
+                            });
+                            return res.json(project);
+                        }
+                    };
+                }
+            });
+        } else {
+            return res.forbidden(); 
+        }
   },
 
   updateMember: function (req, res, next){
+
+
     if (req.isAuthenticated()) {
-        Project.findOne(req.param('id'))
-        .populate('relations')
-        .exec(function (err, project){
-            if (err) {
-                return res.negotiate(err);
-            } else {
-                for (var i = project.relations.length - 1; i >= 0; i--) {
-                    if (project.relations[i].user == req.param('uid')) {
-                        project.relations[i].access = req.body.access; 
-                        project.relations[i].save(function(err) {
+
+        // judge if the current user is the admin of the project
+    Relation.find()
+        .where({project: req.param('id')})
+        .exec(function (err, relations){
+            if (err) return res.serverError();
+
+            var hasMe = false;
+            var hasHim = false; 
+            var relId;
+            for (var i = 0; i < relations.length; i++) {
+                // isMe
+                if (relations[i].user == req.user.id && relations[i].access == "admin" ) {
+                    hasMe = true;
+                }
+
+                if (relations[i].user == req.param("uid") ) {
+                    hasHim = true;
+                    relId = i;
+                }
+
+            };
+
+            if(hasMe){
+                if(hasHim){
+                        relations[relId].access = req.body.access; 
+                        relations[relId].save(function(err) {
                             return res.negotiate(err);
                         });
-                        return res.json(project);
-                    }
-                };
+                        return res.json(relations[relId]);
+               }else{
+                res.notFound();
+               }
+            } else {
+                return res.forbidden();
             }
-        });
+            
+        });  
     } else {
-        return res.forbidden(); 
-    }
+        return res.forbidden();
+    } 
+
 
         // Relation.update({user}, req.params.all(), function projectUpdated(err){
         //     if(err){
@@ -380,15 +584,34 @@ var ProjectController = {
 
   delOne: function(req, res, next){
     if (req.isAuthenticated()) {
-        Project.findOne(req.param('id'), function foundProject(err,project){
-            if(err) return next(err);
-            if(!project) return next('User doen\'t exist/');
+        Relation.find()
+            .where({project: req.param('id')})
+            .exec(function (err, relations){
+                if (err) {
+                    return res.serverError();
+                } else {
+                    var hasMe = false;
 
-            Project.destroy(req.param('id'), function projectDestroyed(err){
-                if(err) return next(err);
-            });
-            res.ok();
-        });
+                    for (var i = 0; i < relations.length; i++) {
+                    // isMe
+                        if (relations[i].user == req.user.id && relations[i].access == "admin" ) {
+                            hasMe = true;
+                        }
+                    }
+
+                    if(hasMe){
+                        Project.findOne(req.param('id'), function foundProject(err,project){
+                            if(err) return next(err);
+                            if(!project) return next('Project doen\'t exist/');
+
+                            Project.destroy(req.param('id'), function projectDestroyed(err){
+                                if(err) return next(err);
+                            });
+                            res.ok();
+                        });
+                    }
+                }
+            });      
     } else {
         return res.forbidden(); 
     }
@@ -402,20 +625,35 @@ var ProjectController = {
             if (err) {
                 return res.negotiate(err);
             } else {
+
+                var hasMe = false;
+                var hasHim = false;
+                var relation;
+
                 for (var i = project.relations.length - 1; i >= 0; i--) {
-                    if (project.relations[i].user == req.param('uid')) {
-                         
-                         var relationId = project.relations[i].id;
-                        // project.relations[i].save(function(err) {
-                        //     return res.negotiate(err);
-                        Relation.destroy(req.param(relationId), function relationDestroyed(err){
-                            if(err) return res.negotiate(err);
-                        });
+                    if (project.relations[i].user == req.user.id && project.relations[i].access == "admin" ) {
+                        hasMe = true;
                     }
-                    return res.ok();                        
+                    if (project.relations[i].user == req.param('uid')) {
+                        hasHim = true;
+                        relation = project.relations[i];                  
+                    }
+                                          
                 };
-            
-                return res.notFound();
+
+                if(hasMe) {
+                    if(hasHim){
+                        relation.access = "none";
+                        project.save(function (err){
+                        });
+                        return res.ok(); 
+
+                    } else {
+                        res.notFound();
+                    }
+                } else {
+                    return res.forbidden();
+                }
             }
         });
     } else {

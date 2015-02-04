@@ -1,10 +1,6 @@
 <!-- views/profile.ejs -->
 <!doctype html>
-<html>
-<head>
-	<title></title>
-</head>
-<body>
+
 	<h1>个人主页</h1>
 	<a href="/logout" >登出</a>
 
@@ -14,7 +10,7 @@
 	<% if ( flock.length > 0 ) { %>
 		<% for(var i=0; i<flock.length; i++) { %>
 			<div >————————————————————————————————————————————————————————</div>
-			<strong>项目名称</strong>:<div id = "id"> <%= flock[i].project.project_name %></div><br>
+			<strong>项目名称</strong>:<div id = "project_name"> <%= flock[i].project.project_name %></div><br>
 			<strong>id</strong>:<div id = "id"> <%= flock[i].project.id %></div><br>
 			<strong>wechat</strong>: <div id = "wechat_link"><%= flock[i].project.wechat_link %></div><br>
 			<strong>default</strong>: <div id = "default_link"><%= flock[i].project.default_link %></div><br>
@@ -27,11 +23,23 @@
 <%          
 			var link = req.protocol + '://' + req.get('Host') + '/project/link/' + flock[i].project.id;
 			var qrImageUrl = 'http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent(link);
+			var imgId = "qr" + i;
+			
 %>
-			<img src ='<%=qrImageUrl%>' />
-			<a href ='<%=qrImageUrl%>' >
+    		<script type="text/javascript" src="/js/sample.js"></script>
+			<script>
+			$(document).ready(function(){
+			 	$('<%= imgId %>').innerHTML = update_qrcode('<%= imgId %>','<%= link %>');
+			 // console.log("innerHTML" + $('<%= imgId %>').innerHTML);
+			});
+			</script>
+
+<!-- 			<input type="button" value="update" onclick="update_qrcode('<%= imgId %>','<%= link %>')"/> -->
+
+			<div id="<%= imgId %>"></div>
+<!-- 			<a href ='<%=qrImageUrl%>' >
 				<%=qrImageUrl%>
-			</a>
+			</a> -->
 
 			<strong>项目位置</strong>: <div id = "project_link">
 			<a href='/project/link/<%= flock[i].project.id %>'>项目链接</a>
@@ -44,5 +52,4 @@
 		<% } %>
 	<% } %>
 	<a href='/project/new'>添加</a>
-</body>
-</html>
+
