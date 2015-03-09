@@ -1,0 +1,35 @@
+  <div ng-controller="ListController">
+  	<div class="row">
+  	<div class="dropdown">
+    <ul class="list-group" >
+      <li ng-repeat="li in list" class="list-group-item" >
+<!--       	<strong>项目关系</strong> 
+        <p>{{li.relations}}</p> -->
+<!--         <strong>项目id</strong>
+        <p>{{li.id}}</p> -->
+        <strong>项目名称</strong>
+        <p>{{li.project_name}}</p>
+<!--         <strong>项目wechatLink</strong> -->
+<!--         <p>{{li.project_wechat}}</p>
+        <a href="#/edit/{{li.id}}">修改连接{{li.id}}</a> -->
+
+        <a href="#/members/{{li.id}}">成员们{{li.id}}</a>
+<!--         <button class="btn btn-default" data-toggle="modal" data-target="#myModal">修改</button> -->
+
+<!-- 		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+    			<div class="modal-content">
+					<div class="modal-body"> -->
+
+<!-- 						<input type="text" name="field" ng-model="field"  name="default_link" value = {{li.default_link}} > -->
+
+
+<!-- 				    </div>
+				</div>
+      		</div> -->
+      	</div>
+      </li>
+    </ul>
+	</div>
+	</div>
+  </div>

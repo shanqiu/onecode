@@ -1,0 +1,15 @@
+<div class="container-fluid">
+	<div class="row">
+  		<div ng-repeat="project in projects" > 
+		  	<div >
+		    	<h1 class="page-header"><a ui-sref="projects.detail({projectId:project.id})">{{project.project.project_name}}</a></h1>
+			</div>
+			<dl class="dl-horizontal">	
+			  <dt class="dt-all" >Project Link: </dt>
+			  <dd class="dd-all" ><a href='/project/link/{{project.project.id}}'>Click</a><dd>
+			</dl>
+			<img class="qr-img" src="http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=localhost:1337/project/link/{{project.project.id}}" >
+		</div>
+	</div>
+  </div>
+    

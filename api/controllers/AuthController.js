@@ -195,7 +195,8 @@ var AuthController = {
         } else {
           // console.log("redirect to default / ");
         }
-        res.redirect(targetUrl);
+        //res.redirect(targetUrl);
+        res.redirect("/#/project");
       });
     });
   },

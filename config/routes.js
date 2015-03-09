@@ -32,9 +32,9 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  // '/': {
-  //   view: 'homepage'
-  // },
+   // '/': {
+   //  view: 'homepage'
+   // },
 
   /***************************************************************************
   *                                                                          *
@@ -45,8 +45,10 @@ module.exports.routes = {
   * for configuration options and examples.                                  *
   *                                                                          *
   ***************************************************************************/
-  'get /':'AuthController.display',
+  //'get /':'AuthController.display',
+  'get /api/users/me':'UserController.findMe',
   'get /api/users/:id':'UserController.findOne',
+
   'get /api/users':'UserController.findAll',
   'get /login': 'AuthController.login',
   'get /logout': 'AuthController.logout',
@@ -97,4 +99,5 @@ module.exports.routes = {
     controller : 'ProjectController',
     action : 'link'
   },
+
 };

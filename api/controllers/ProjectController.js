@@ -495,10 +495,12 @@ var ProjectController = {
                     return res.negotiate(err);
                 } else {
                     for (var i = project.relations.length - 1; i >= 0; i--) {
+                        console.log("aaaaaa");
                         //judge if the user is the admin or collabrator of the project
-                        if (project.relations[i].user == req.param('uid')) {
+                        if (project.relations[i].user == req.user.id) {
                             Project.update(req.param('id'), req.params.all(), function projectUpdated(err){
                                 if(err) return err.negotiate();
+                                console.log("bbbb");
                             });
                             return res.json(project);
                         }
@@ -670,7 +672,7 @@ var ProjectController = {
 
             var agent = ProjectController.parse(userAgent);
             console.log("agent: %j ", agent);
-
+            console.log(project);
             if(agent.browser.wechat == true) {
                 console.log("go to wechat");
                 res.redirect(project.wechat_link);
@@ -684,11 +686,12 @@ var ProjectController = {
                 res.redirect("http://" + project.android_link);
             }else{
                 console.log("go to default");
-                //res.redirect("http://"+project.default_link);
-                res.view({
-                    project : project
-                });
-            }
+                res.redirect("http://"+project.default_link);
+                // console.log(project);
+            };
+            res.view({
+                project : project
+            });
         });
 
         

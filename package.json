@@ -26,7 +26,6 @@
     "passport": "~0.2.1",
     "passport-local": "~1.0.0",
     "sails-generate-auth": "~0.2.0",
-    "util": "~0.10.3",
     "validator": "~3.22.1",
     "waterline":"latest"
   },

@@ -1,0 +1,32 @@
+<div >
+  <h1 class="page-header">{{project.project.project_name}}</h1>
+      <dl class="dl-horizontal">
+        <dt>Android Link: </dt>
+        <dd>{{project.project.android_Link}}</dd>
+        <dt>ios link: </dt>
+        <dd>{{project.project.ios_link}}</dd>
+        <dt>Wechat Link: </dt>
+        <dd>{{project.project.wechat_link}}</dd>
+        <dt>Default Link: </dt>
+        <dd>{{project.project.default_link}}</dd>
+        <dt>Project Link: </dt>
+        <dd><a href='/project/link/{{project.project.id}}'>Click</a><dd>
+      </dl>
+      <img class="qr-img" src="http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=localhost:1337/project/link/{{project.project.id}}" >
+<!--     <h4>Members</h4>
+    <ul>
+      <li ng-repeat="member in project.project.members">
+          <div>{{member.user.username}}</div>
+          <div>{{member.access}}</div>
+          <a ui-sref="projects.detail.member({memberId:member.id})">修改权限</a>
+          <div>{{member.user.createdAt}}</div>
+
+      </li>
+    </ul> -->
+    <div style="padding-top:20px ; padding-bottom:40px;">
+      <button class="btn btn-primary btn-lg" ng-click="edit()">Edit The Links</button>
+    </div>
+  <div ui-view class="slide">
+<!--     <small class="muted">Click on a contact item to view and/or edit it.</small> -->
+  </div>
+</div>

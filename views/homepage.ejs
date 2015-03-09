@@ -1,19 +1,8 @@
+  
 <!-- Default home page -->
 <div class="default-page">
 
     <div>
-        <%
-            // sails.log.debug("session: " + util.inspect(req.session));
-            sails.log.debug(req.user);
-            // sails.log.debug(req.session.passport );
-
-            // sails.log.debug(req.session.passport.user);
-            // var u = res.req.flash('user');
-            // sails.log.debug("ejs res.req.flash(\"user\"): " + util.inspect(u));
-            // sails.log.debug("ejs username: " + u[0].username);
-            // sails.log.debug("ejs email: " + u[0].email);
-        %>
-
         <% if (req.session.passport && req.session.passport.user) {%>
         <span><%=req.user%></span>
 
@@ -28,3 +17,4 @@
     </div>
  
 </div>
+

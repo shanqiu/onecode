@@ -104,6 +104,85 @@ var UserController = {
       
     });
   },
+  findMe: function(req, res) {
+
+    if (!req.isAuthenticated()) {
+         return res.forbidden();
+        //res.redirect('/login');
+    }else{
+
+    Relation.find()
+    .where({user: req.user.id})
+    .populate('project')
+    .exec(function (err, relations){
+      if(err) return res.negotiate(err);
+
+      var rels = new Array();
+      
+
+      for (var i = 0; i < relations.length; i++) {
+        var rel = relations[i];
+        if (rel.access != 'none' && rel.project) {
+          delete rel['user'];
+          delete rel.project['relations'];       
+          rels.push(rel);
+
+          // project:{
+          //   wechat:
+          //   id
+          //   relations:shanle
+          // }
+          // admin:
+          // date
+          //req.param('id') => rel.project.id
+
+        }
+      }
+
+      Relation.find()
+          .populate('user')
+          .exec(function (err, relas) {
+            if (err) return res.negotiate(err);
+
+            //var members = new Array();
+              for (var i = 0; i < rels.length; i++) {
+
+                var tempMember = new Array();
+
+                for (var j = 0; j < relas.length; j++) {
+
+                  var rel = relas[j];
+
+                  if (rel.user && rel.access != "none") {
+                  if (rel.project == rels[i].project.id) { 
+             
+                    delete rel['project'];
+                    delete rel.user['relations'];
+                    delete rel.user['passports'];                      
+                    tempMember.push(rel);                   
+                  }
+                  
+                rels[i].project['members'] = tempMember;
+              }
+
+             
+                    //console.log('rel: %j', rel);
+                }
+            }
+              User.findOne(req.user.id)
+              .exec(function (err, user){
+                if(err) return res.negotiate(err);
+
+                  user['workspace'] = rels;  
+                  res.json(user);
+                
+              });
+              
+            });
+      
+    });
+    }
+  },
   display: function(req, res){
     // res.view({user:req.user, aaa:"bbb"});
     res.view();

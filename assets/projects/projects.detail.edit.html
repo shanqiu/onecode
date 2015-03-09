@@ -1,0 +1,46 @@
+<div >
+  <h1 class="page-header">{{project.project.project_name}}</h1>
+<!--     <h4>Members</h4>
+    <ul>
+      <li ng-repeat="member in project.project.members">
+          <div>{{member.user.username}}</div>
+          <div>{{member.access}}</div>
+          <a ui-sref="projects.detail.member({memberId:member.id})">修改权限</a>
+          <div>{{member.user.createdAt}}</div>
+
+      </li>
+    </ul> -->
+
+<!-- </div>
+	<div>project_name<input type="text" ng-model="project.project.project_name" /></div>
+</div> -->
+<form class="form-horizontal">
+  <div class="form-group">
+    <label for="exampleInputName1" class="col-sm-2 control-label" >Android Link:</label>
+    <div class="col-sm-10">
+	    <input type="text" class="form-control" id="exampleInputName1" placeholder="{{project.project.android_Link}}">
+	</div>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputName2" class="col-sm-2 control-label">ios Link:</label>
+    <div class="col-sm-10">
+    	<input type="text" class="form-control" id="exampleInputName2" placeholder="{{project.project.ios_Link}}">
+	</div>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputName3" class="col-sm-2 control-label">Wechat Link:</label>
+    <div class="col-sm-10">
+    	<input type="text" class="form-control" id="exampleInputName3" placeholder="{{project.project.wechat_Link}}">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputName4" class="col-sm-2 control-label">Default Link:</label>
+    <div class="col-sm-10">
+    	<input type="text" class="form-control" id="exampleInputName4" placeholder="{{project.project.default_Link}}">
+    </div>
+  </div>
+  <div style="padding-top:20px">
+  	<button class="btn btn-primary btn-lg" ng-click="done()">Submit the Changes</button>
+  </div>
+</form>
+
